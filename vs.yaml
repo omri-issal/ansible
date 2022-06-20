@@ -1,0 +1,32 @@
+---
+- name: BIG-IP SETUP
+  hosts: bigips
+  connection: local
+  gather_facts: false
+
+  collections:
+    - f5networks.f5_modules
+    
+  tasks:
+    - name: Setting up provider values
+      set_fact:
+       provider:
+        server: "{{inventory_hostname}}"
+        validate_certs: "False"
+  
+    - name: ADD VIRTUAL SERVER
+      bigip_virtual_server:
+        provider: "{{provider}}"
+        name: "HTTP-VS"
+        destination: 192.168.19.50
+        port: "80"
+        enabled_vlans: "all"
+        all_profiles: ['http','clientssl','oneconnect']
+        pool: "http_pool"
+        security_log_profiles: "Log all requests"
+        policies:
+        - waf_policy1
+        
+    - name: PRINT OUT WEB VIP FOR F5
+      debug:
+        msg: "The VIP (Virtual IP) is http://{{ansible_host}}"

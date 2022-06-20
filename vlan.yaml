@@ -1,0 +1,26 @@
+---
+- name: BIG-IP SETUP
+  hosts: bigips
+  connection: local
+  gather_facts: false
+
+  collections:
+    - f5networks.f5_modules
+
+  tasks:
+  - name: Setting up provider values
+    set_fact:
+      provider:
+        server: "{{inventory_hostname}}"
+        validate_certs: "False"
+
+
+  - name: Add vlan
+    bigip_vlan:
+      untagged_interfaces: "{{ port }}"
+      name: "{{ name }}"
+      tag: "{{ tag }}"
+      provider: "{{ provider }}"
+      
+
+
